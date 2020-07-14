@@ -2,6 +2,7 @@ class Node:
     def __init__(self, value):
         self.value = value
         self.next = None
+        self.prev = None
 
     def get_value(self):
         return self.value
@@ -12,6 +13,9 @@ class Node:
     def set_next(self, new_next):
         self.next = new_next
 
+    def set_prev(self, prev_node):
+        self.prev = prev_node
+
 
 class LinkedList:
     def __init__(self):
@@ -21,6 +25,9 @@ class LinkedList:
     def add_to_tail(self, value):
         # 1. create the Node from the value
         new_node = Node(value)
+
+
+
         # So, what do we do if tail is None?
         # What's the rule we want to set to indicate that the linked
         # list is empty?
@@ -38,7 +45,12 @@ class LinkedList:
             # These steps assume that the tail is already referring
             # to a Node
             # 2. set the old tail's next to refer to the new Node
+
+            new_node.set_prev(self.tail)
+
             self.tail.set_next(new_node)
+            # tail node needs to point back
+
             # 3. reassign self.tail to refer to the new Node
             self.tail = new_node
 
@@ -55,9 +67,11 @@ class LinkedList:
             # also delete the linked list's tail reference
             self.tail = None
             return head.get_value()
+
         val = self.head.get_value()
         # set self.head to the Node after the head
         self.head = self.head.get_next()
+        self.head.prev = None
         return val
 
     def remove_tail(self):
@@ -65,20 +79,16 @@ class LinkedList:
         if self.head is None:
             return
 
-        current = self.head
-
-        while current.get_next() and current.get_next() is not self.tail:
-            current = current.get_next()
-
         # at this point, `current` is the node right before the tail
         # set the tail to be None
         val = self.tail.get_value()
 
         # move self.tail to the Node right before
-        self.tail = current
+        self.tail = self.tail.prev
 
         # remove new tail's reference to the old tail
-        self.tail.next = None
+        if self.tail:
+            self.tail.next = None
 
         return val
 
